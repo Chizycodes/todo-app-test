@@ -6,8 +6,8 @@ const TodoList = () => {
 	const { tasks, setShowTaskInput } = useTodo();
 
 	return (
-		<div className="overflow-y-auto h-[calc(100%-80px)]">
-			<div className="p-5 ">
+		<div className="h-full w-full ">
+			<div className="h-full w-full">
 				{tasks?.length ? tasks.map((task) => <TodoItem task={task} key={task?.id} />) : <p>No tasks available</p>}
 			</div>
 

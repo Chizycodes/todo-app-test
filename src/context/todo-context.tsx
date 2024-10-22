@@ -1,5 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useState, useContext, ReactNode } from "react";
+import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
 
 export type TaskType = {
@@ -25,8 +26,16 @@ interface TodoProviderProps {
 
 export const TodoProvider = ({ children }: TodoProviderProps) => {
 	const [tasks, setTasks] = useState<TaskType[]>([
-		{ id: "1", taskName: "Complete React project", isComplete: false },
-		{ id: "2", taskName: "Go grocery shopping", isComplete: false },
+		// { id: "1", taskName: "Complete React project", isComplete: false },
+		// { id: "2", taskName: "Go grocery shopping", isComplete: false },
+		// { id: "1", taskName: "Complete React project", isComplete: false },
+		// { id: "2", taskName: "Go grocery shopping", isComplete: false },
+		// { id: "1", taskName: "Complete React project", isComplete: false },
+		// { id: "2", taskName: "Go grocery shopping", isComplete: false },
+		// { id: "1", taskName: "Complete React project", isComplete: false },
+		// { id: "2", taskName: "Go grocery shopping", isComplete: false },
+		// { id: "1", taskName: "Complete React project", isComplete: false },
+		// { id: "2", taskName: "Go grocery shopping", isComplete: false },
 	]);
 	const [showTaskInput, setShowTaskInput] = useState(false);
 
@@ -37,6 +46,7 @@ export const TodoProvider = ({ children }: TodoProviderProps) => {
 			isComplete: false,
 		};
 		setTasks((prev) => [...prev, newTask]);
+		toast.success("Task added successfully");
 	};
 
 	const toggleComplete = (taskId: string) => {
@@ -45,6 +55,7 @@ export const TodoProvider = ({ children }: TodoProviderProps) => {
 
 	const removeTask = (taskId: string) => {
 		setTasks(tasks.filter((task) => task.id !== taskId));
+		toast.success("Task removed successfully");
 	};
 
 	return (

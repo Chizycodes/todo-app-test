@@ -6,11 +6,14 @@ export default {
 			colors: {
 				lightBlue: "#3556AB",
 				darkBlue: "#071D55",
-        textGray: "#8D8D8D",
+				textGray: "#8D8D8D",
 				red: "#AB3535",
 				error: "#FF0000",
 			},
 		},
 	},
-	plugins: [],
+	plugins: [require("daisyui")],
+	daisyui: {
+		themes: ["light"],
+	},
 };

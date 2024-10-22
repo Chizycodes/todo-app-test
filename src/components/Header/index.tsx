@@ -4,7 +4,7 @@ import TrophyImage from "../../assets/trophy.svg";
 const Header = () => {
 	return (
 		<div>
-			<div className="bg-lightBlue flex items-start gap-5 w-full  p-5 text-white drop-shadow-xl shadow-xl shadow-[#00000026]">
+			<div className="bg-lightBlue flex items-start gap-5 w-full  p-5 text-white drop-shadow-xl shadow-xl shadow-[#00000026] min-h-[120px]">
 				<img src={AvatarImage} alt="Avatar" />
 				<div>
 					<h1 className="text-lg font-bold">Hello, Jhon</h1>

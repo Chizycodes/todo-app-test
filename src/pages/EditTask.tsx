@@ -3,7 +3,7 @@ import { useTodo } from "../context/todo-context";
 import { toast } from "react-toastify";
 
 const EditTask = () => {
-	const { tasks, addTask, removeTask, setShowTaskInput } = useTodo();
+	const { addTask, removeTask, setShowTaskInput } = useTodo();
 	const [taskName, setTaskName] = useState("");
 	const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
 
@@ -20,7 +20,7 @@ const EditTask = () => {
 
 		if (editingTaskId) {
 			// Update the task
-			const updatedTasks = tasks.map((task) => (task.id === editingTaskId ? { ...task, taskName } : task));
+			// const updatedTasks = tasks.map((task) => (task.id === editingTaskId ? { ...task, taskName } : task));
 		} else {
 			// Add a new task
 			addTask(taskName);

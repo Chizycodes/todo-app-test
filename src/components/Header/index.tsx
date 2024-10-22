@@ -15,7 +15,7 @@ const Header = () => {
 			<div className="bg-[#CDE53D] border border-[#9EB031] px-5 py-10 relative  shadow-inner shadow-[#FFFFFF99]">
 				<div className="flex gap-5 items-center">
 					<img src={TrophyImage} alt="Trophy" />
-					<p className="text-primary font-bold text-lg text-darkBlue">Go Pro Upgrade Now</p>
+					<p className="font-bold text-lg text-darkBlue">Go Pro Upgrade Now</p>
 				</div>
 				<div className="bg-darkBlue w-[66px] h-[71px] text-[#F2C94C] font-medium text-lg absolute top-[-2px] right-5 flex items-center justify-center">
 					$1

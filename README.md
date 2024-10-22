@@ -13,7 +13,7 @@ A simple Todo List application built with **React**, **TypeScript**, and **Vite*
 1. **Clone the repository**:
 
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/Chizycodes/todo-app-test.git
   
 2. **Navigate to the project directory**:
 

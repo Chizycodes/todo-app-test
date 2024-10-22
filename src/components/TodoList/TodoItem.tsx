@@ -1,9 +1,12 @@
 import { FaCheck } from "react-icons/fa6";
 import { TaskType } from "../../context/todo-context";
 import { useTodo } from "../../context/todo-context";
+import { useNavigate } from "react-router-dom";
 
 const TodoItem = ({ task }: { task: TaskType }) => {
-	const { setShowTaskInput, toggleComplete } = useTodo();
+	const { toggleComplete } = useTodo();
+	const navigate = useNavigate();
+
 	return (
 		<div className="bg-white border border-[#E7E7E7] p-5 flex justify-between gap-5 mb-4">
 			<div className="flex gap-5 items-center">
@@ -19,7 +22,12 @@ const TodoItem = ({ task }: { task: TaskType }) => {
 					{task?.taskName}
 				</p>
 			</div>
-			<button className="border border-darkBlue p-3 rounded-md text-darkBlue" onClick={() => setShowTaskInput(true)}>
+			<button
+				className="border border-darkBlue p-3 rounded-md text-darkBlue"
+				onClick={() => {
+					navigate(`/edit/${task.id}`);
+				}}
+			>
 				Edit
 			</button>
 		</div>

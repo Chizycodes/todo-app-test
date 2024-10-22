@@ -1,11 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTodo } from "../context/todo-context";
 import { toast } from "react-toastify";
+import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const EditTask = () => {
-	const { addTask, removeTask, setShowTaskInput } = useTodo();
+	const { taskId } = useParams<{ taskId: string }>();
+	const { tasks, addTask, removeTask } = useTodo();
 	const [taskName, setTaskName] = useState("");
-	const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+	const navigate = useNavigate();
 
 	// Handle input change for task name
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -18,31 +21,41 @@ const EditTask = () => {
 			return toast.error("Please enter task name");
 		}
 
-		if (editingTaskId) {
+		if (taskId) {
 			// Update the task
-			// const updatedTasks = tasks.map((task) => (task.id === editingTaskId ? { ...task, taskName } : task));
+			addTask(taskName, taskId);
 		} else {
 			// Add a new task
 			addTask(taskName);
 		}
 		setTaskName("");
-		setShowTaskInput(false);
+		navigate("/");
 	};
 
 	// Remove the task
 	const handleDelete = () => {
-		if (editingTaskId) {
-			removeTask(editingTaskId);
+		if (taskId) {
+			removeTask(taskId);
 			setTaskName("");
-			setEditingTaskId(null);
+			navigate("/");
 		}
-		setShowTaskInput(false);
 	};
+
+	useEffect(() => {
+		if (taskId) {
+			const taskToEdit = tasks.find((task) => task.id === taskId);
+			if (taskToEdit) {
+				setTaskName(taskToEdit.taskName);
+			}
+		} else {
+			setTaskName("");
+		}
+	}, [taskId, tasks]);
 
 	return (
 		<div className="relative h-full w-full">
 			<div className="bg-lightBlue w-full flex items-center justify-center  p-5 text-white drop-shadow-xl shadow-xl shadow-[#00000026] min-h-[120px]">
-				<h1 className="text-2xl font-bold">Edit Task</h1>
+				<h1 className="text-2xl font-bold">{taskId ? "Edit Task" : "Add Task"}</h1>
 			</div>
 
 			<div className="p-5">
@@ -61,17 +74,19 @@ const EditTask = () => {
 				</div>
 
 				<div className="flex gap-10 absolute bottom-2 left-0 right-0 w-full p-5">
-					<button
-						className="bg-red p-3 rounded-md text-white w-full max-w-[120px] mt-5 border-2 border-[#720D0D] shadow-inner shadow-[#A8B5DE80]"
-						onClick={handleDelete}
-					>
-						Delete
-					</button>
+					{taskId && (
+						<button
+							className="bg-red p-3 rounded-md text-white w-full max-w-[120px] mt-5 border-2 border-[#720D0D] shadow-inner shadow-[#A8B5DE80]"
+							onClick={handleDelete}
+						>
+							Delete
+						</button>
+					)}
 					<button
 						className="border border-darkBlue bg-lightBlue p-3 rounded-md w-full mt-5 text-white shadow-inner shadow-[#A8B5DE80]"
 						onClick={handleSave}
 					>
-						Save
+						{taskId ? "Update" : "Save"}
 					</button>
 				</div>
 			</div>

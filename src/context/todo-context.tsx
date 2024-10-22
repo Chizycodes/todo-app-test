@@ -11,11 +11,9 @@ export type TaskType = {
 
 interface TodoContextType {
 	tasks: TaskType[];
-	addTask: (taskName: string) => void;
+	addTask: (taskName: string, taskId?: string) => void;
 	toggleComplete: (taskId: string) => void;
 	removeTask: (taskId: string) => void;
-	showTaskInput: boolean;
-	setShowTaskInput: (show: boolean) => void;
 }
 
 const TodoContext = createContext<TodoContextType | undefined>(undefined);
@@ -25,28 +23,23 @@ interface TodoProviderProps {
 }
 
 export const TodoProvider = ({ children }: TodoProviderProps) => {
-	const [tasks, setTasks] = useState<TaskType[]>([
-		// { id: "1", taskName: "Complete React project", isComplete: false },
-		// { id: "2", taskName: "Go grocery shopping", isComplete: false },
-		// { id: "1", taskName: "Complete React project", isComplete: false },
-		// { id: "2", taskName: "Go grocery shopping", isComplete: false },
-		// { id: "1", taskName: "Complete React project", isComplete: false },
-		// { id: "2", taskName: "Go grocery shopping", isComplete: false },
-		// { id: "1", taskName: "Complete React project", isComplete: false },
-		// { id: "2", taskName: "Go grocery shopping", isComplete: false },
-		// { id: "1", taskName: "Complete React project", isComplete: false },
-		// { id: "2", taskName: "Go grocery shopping", isComplete: false },
-	]);
-	const [showTaskInput, setShowTaskInput] = useState(false);
+	const [tasks, setTasks] = useState<TaskType[]>([]);
 
-	const addTask = (taskName: string) => {
-		const newTask: TaskType = {
-			id: uuidv4(),
-			taskName,
-			isComplete: false,
-		};
-		setTasks((prev) => [...prev, newTask]);
-		toast.success("Task added successfully");
+	const addTask = (taskName: string, taskId?: string) => {
+		if (taskId) {
+			// If taskId is provided, find the task and update it
+			setTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, taskName } : task)));
+			toast.success("Task updated successfully");
+		} else {
+			// If no taskId, create a new task
+			const newTask: TaskType = {
+				id: uuidv4(),
+				taskName,
+				isComplete: false,
+			};
+			setTasks((prev) => [...prev, newTask]);
+			toast.success("Task added successfully");
+		}
 	};
 
 	const toggleComplete = (taskId: string) => {
@@ -58,11 +51,7 @@ export const TodoProvider = ({ children }: TodoProviderProps) => {
 		toast.success("Task removed successfully");
 	};
 
-	return (
-		<TodoContext.Provider value={{ tasks, addTask, toggleComplete, removeTask, showTaskInput, setShowTaskInput }}>
-			{children}
-		</TodoContext.Provider>
-	);
+	return <TodoContext.Provider value={{ tasks, addTask, toggleComplete, removeTask }}>{children}</TodoContext.Provider>;
 };
 
 export const useTodo = (): TodoContextType => {

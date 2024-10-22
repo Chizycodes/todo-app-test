@@ -46,10 +46,14 @@ const EditTask = () => {
 			const taskToEdit = tasks.find((task) => task.id === taskId);
 			if (taskToEdit) {
 				setTaskName(taskToEdit.taskName);
+			} else {
+				toast.error("Task not found");
+				navigate("/");
 			}
 		} else {
 			setTaskName("");
 		}
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [taskId, tasks]);
 
 	return (

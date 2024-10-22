@@ -48,4 +48,3 @@ export default tseslint.config({
   },
 })
 ```
-# short-point-todo

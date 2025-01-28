@@ -1,0 +1,73 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - feature/**
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    - name: Install dependencies
+      run: |
+        yarn install --frozen-lockfile
+
+    - name: Lint code
+      run: yarn lint
+
+    - name: Run tests
+      run: yarn test
+
+    - name: Build application
+      run: yarn build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    - name: Install dependencies
+      run: |
+        yarn install --frozen-lockfile
+
+    - name: Build application
+      run: yarn build
+
+    - name: Deploy to staging
+      if: github.ref == 'refs/heads/develop'
+      env:
+        REACT_APP_API_URL: ${{ secrets.STAGING_API_URL }}
+      run: |
+        # Deploy commands for staging environment
+
+    - name: Deploy to production
+      if: github.ref == 'refs/heads/main'
+      env:
+        REACT_APP_API_URL: ${{ secrets.PRODUCTION_API_URL }}
+      run: |
+        # Deploy commands for production environment

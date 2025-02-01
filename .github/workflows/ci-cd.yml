@@ -6,6 +6,7 @@ on:
       - main
       - develop
       - feature/**
+      - hotfix/**
   pull_request:
     branches:
       - main
@@ -16,58 +17,71 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '14'
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16"
 
-    - name: Install dependencies
-      run: |
-        yarn install --frozen-lockfile
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-
 
-    - name: Lint code
-      run: yarn lint
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
 
-    - name: Run tests
-      run: yarn test
+      - name: Run tests
+        run: yarn test
 
-    - name: Build application
-      run: yarn build
-
-  deploy:
-    needs: build
+  versioning:
     runs-on: ubuntu-latest
+    needs: build
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '14'
+      - name: Semantic Release
+        uses: cycjimmy/semantic-release-action@v2
+        with:
+          semantic_version: 17.0.8
+          branches: main, develop
+          extra_plugins: |
+            @semantic-release/changelog
+            @semantic-release/git
 
-    - name: Install dependencies
-      run: |
-        yarn install --frozen-lockfile
+      - name: Update Microservices
+        if: github.ref == 'refs/heads/main'
+        run: |
+          # Assuming microservices are in the same repository for simplicity
+          # Update package.json in microservices to the new React app version
+          VERSION=$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')
+          sed -i '' "s/\"react-app\": \".*\"/\"react-app\": \"$VERSION\"/" path/to/microservice1/package.json
+          sed -i '' "s/\"react-app\": \".*\"/\"react-app\": \"$VERSION\"/" path/to/microservice2/package.json
+          # Commit and push changes
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git commit -am "chore: update react-app version to $VERSION"
+          git push origin main
 
-    - name: Build application
-      run: yarn build
-
-    - name: Deploy to staging
-      if: github.ref == 'refs/heads/develop'
-      env:
-        REACT_APP_API_URL: ${{ secrets.STAGING_API_URL }}
-      run: |
-        # Deploy commands for staging environment
-
-    - name: Deploy to production
-      if: github.ref == 'refs/heads/main'
-      env:
-        REACT_APP_API_URL: ${{ secrets.PRODUCTION_API_URL }}
-      run: |
-        # Deploy commands for production environment
+  prevent-direct-push:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+    steps:
+      - name: Prevent direct push
+        run: |
+          if [[ "${{ github.event.head_commit }}" == "" ]]; then
+            echo "Direct push to main or develop is not allowed. Please use a pull request."
+            exit 1
+          fi
